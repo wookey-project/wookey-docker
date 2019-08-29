@@ -29,11 +29,17 @@ You can interactively open the Wookey SDK using:
 Once the SDK shell is open, the usual SDK commands can be used, as the overall configuration is already done:
 
    ```$ source setenv.sh```
+   
    ```[...]```
+   
    ```$ make defconfig_list```
+   
    ```[...]```
+   
    ```$ make boards/wookey/configs/wookey2_production_defconfig```
+   
    ```$ make```
+   
    ```$ make javacard_compile```
 
 
