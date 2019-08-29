@@ -10,7 +10,7 @@ run echo "deb http://deb.debian.org/debian/ buster contrib non-free" >> /etc/apt
 run	apt-get update
 
 # debian packages dependencies
-run	apt-get install -y bash repo git make gcc-arm-none-eabi binutils-arm-none-eabi python-pip python3-pip python-pyscard python-crypto openjdk-11-jdk maven ant curl zip unzip bash kconfig-frontends
+run	apt-get install -y bash repo sudo git make gcc-arm-none-eabi binutils-arm-none-eabi python-pip python3-pip python-pyscard python-crypto openjdk-11-jdk maven ant curl zip unzip bash kconfig-frontends
 
 # python dependencies (out of debian)
 run pip install intelhex
@@ -30,6 +30,13 @@ run git clone https://github.com/martinpaljak/oracle_javacard_sdks.git /tmp/orac
 
 run groupadd build
 run useradd -d /build -ms /bin/bash -g build build;
+run usermod -a -G sudo build;
+
+# this is required to allow openocd, dfu-util and pcsc usage when interacting with the device and Javacards from Docker (see README)
+run /bin/dash -c 'echo "build    ALL=(ALL) NOPASSWD: /usr/bin/openocd" > /etc/sudoers.d/build; \
+                  echo "build    ALL=(ALL) NOPASSWD: /usr/sbin/pcscd" >> /etc/sudoers.d/build; \
+                  echo "build    ALL=(ALL) NOPASSWD: /usr/bin/dfu-util" >> /etc/sudoers.d/build; \
+                  chmod 0440 /etc/sudoers.d/build'
 
 user build:build
 workdir /build
@@ -50,7 +57,7 @@ user root
 workdir /tmp
 
 # add debug and flash specific content
-run apt-get install -y gdb-multiarch openocd
+run apt-get install -y gdb-multiarch openocd minicom scdaemon libccid pcscd dfu-util
 
 user build:build
 workdir /build
