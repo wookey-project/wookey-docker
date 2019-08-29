@@ -11,11 +11,13 @@ The full Wookey project documentation can be found here:
 
 https://wookey-project.github.io/index.html
 
+
 ## Building the Docker image
 
 Just run:
 
    host> docker build Dockerfile-path
+
 
 ## Running the Docker image
 
@@ -34,6 +36,7 @@ Once the SDK shell is open, the usual SDK commands can be used, as the overall c
    $ make
    $ make javacard_compile
 
+
 ## Flashing boards and Javacard from Docker images
 
 Wookey boards are connected through Discovery board ST-Link USB device, hosting as a CWD probe.
@@ -51,6 +54,7 @@ fully remapped in the docker container
 It is possible to map explicitly each device using the --device option, avoiding a complete remap of the /dev/bus/usb
 filesystem and a privilegied execution. Nonetheless, the --device arguments depend on your own hardware list (CCID reader,
 Discovery board ST-Link reference, and so on).
+
 
 ### Flashing the board
 
