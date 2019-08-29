@@ -1,6 +1,6 @@
 # Wookey SDK Dockerfile
 
-## Introduction
+## Introduction
 
 this is the Dockerfile for the Wookey project SDK. This image contains a
 fully functional development environment for the Wookey project, including
@@ -12,11 +12,11 @@ The full Wookey project documentation can be found here:
 https://wookey-project.github.io/index.html
 
 
-## Building the Docker image
+## Building the Docker image
 
 Just run:
 
-   host> docker build Dockerfile-path
+   ```host> docker build Dockerfile-path```
 
 
 ## Running the Docker image
@@ -24,20 +24,20 @@ Just run:
 
 You can interactively open the Wookey SDK using:
 
-   host> docker run -it wookey_sdk
+   ```host> docker run -it wookey_sdk```
 
 Once the SDK shell is open, the usual SDK commands can be used, as the overall configuration is already done:
 
-   $ source setenv.sh
-   [...]
-   $ make defconfig_list
-   [...]
-   $ make boards/wookey/configs/wookey2_production_defconfig
-   $ make
-   $ make javacard_compile
+   ```$ source setenv.sh```
+   ```[...]```
+   ```$ make defconfig_list```
+   ```[...]```
+   ```$ make boards/wookey/configs/wookey2_production_defconfig```
+   ```$ make```
+   ```$ make javacard_compile```
 
 
-## Flashing boards and Javacard from Docker images
+## Flashing boards and Javacard from Docker images
 
 Wookey boards are connected through Discovery board ST-Link USB device, hosting as a CWD probe.
 Javacard are connected through any USB CCID card reader.
@@ -46,7 +46,7 @@ These two devices are real hardware and require multiple USB devices to be acces
 
 This can be done at docker image start by specifying that USB devices should be mapped into the Docker container:
 
-   host> docker run -it --privileged -v /dev/bus/usb:/dev/bus/usb  wookey_sdk
+   ```host> docker run -it --privileged -v /dev/bus/usb:/dev/bus/usb  wookey_sdk```
 
 **CAUTION**: this mode make the docker container being executed in privilegied level, as the /dev/bus/usb subtree is
 fully remapped in the docker container
@@ -56,11 +56,11 @@ filesystem and a privilegied execution. Nonetheless, the --device arguments depe
 Discovery board ST-Link reference, and so on).
 
 
-### Flashing the board
+### Flashing the board
 
 This is done using OpenOCD:
 
-   $ sudo /usr/bin/openocd -f tools/stm32f4disco1.cfg -f tools/ocd.cfg
+   ```$ sudo /usr/bin/openocd -f tools/stm32f4disco1.cfg -f tools/ocd.cfg```
 
 **HINT**: If the device is not detected, try to use stm32f4disco0.cfg. The Discovery board device ID may vary.
 
@@ -70,22 +70,22 @@ This is done using OpenOCD:
 
 Javacards access requires PCSC daemon to be started. First, start it:
 
-   $ sudo /usr/sbin/pcscd --auto-exit
+   ```$ sudo /usr/sbin/pcscd --auto-exit```
 
 Considering you have three independent Javacard, you can enter successively a new one after each flashing process.
 In the case of a debug firmware configuration, it is possible to use a single Javacard for testing purpose.
 
 Enter the Authentication Javacard. Then run:
 
-   $ make javacard_push_auth
+   ```$ make javacard_push_auth```
 
 Enter the DFU upgrade Javacard. Then run:
 
-   $ make javacard_push_dfu
+   ```$ make javacard_push_dfu```
 
 Enter the firmware signature Javacard. Then run:
 
-   $ make javacard_push_sig
+   ```$ make javacard_push_sig```
 
 ## Booting the device in nominal mode
 
@@ -102,11 +102,11 @@ to sign it using the Javacard applet as a secure token to encrypt and sign the f
 
 Check that pcscd is up, or start it:
 
-   $ sudo /usr/sbin/pcscd --auto-exit
+   ```$ sudo /usr/sbin/pcscd --auto-exit```
 
 To sign a new firmware, just run:
 
-   $ make sign tosign=flip:flop version="1.0.0-0"
+   ```$ make sign tosign=flip:flop version="1.0.0-0"```
 
 This command create cyphered and signed version of both A and B (flip and flop) firmware images, with a
 specific header including the given firmware version.
@@ -120,7 +120,7 @@ The DFU Javacard must be used to authenticate. Default pet pin is 1234, Default 
 
 Once the device has booted in DFU mode, it is possible to update it using the previously generated C+I firmware:
 
-   $ sudo /usr/bin/dfu-util -v -D build/armv7-m/wookey/flop_fw.bin.signed -t 4096 -d dead:cafe
+   ```$ sudo /usr/bin/dfu-util -v -D build/armv7-m/wookey/flop_fw.bin.signed -t 4096 -d dead:cafe```
 
 The device ask the user to validate the new firmware version, and if it is okay, the firmware is uploaded, authenticated and the device reboots in nominal mode on the newly installed firmware.
 
