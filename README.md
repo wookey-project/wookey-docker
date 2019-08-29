@@ -11,6 +11,8 @@ The full Wookey project documentation can be found here:
 
 https://wookey-project.github.io/index.html
 
+In the following, commands starting with *host>* are made in the host computer, as
+commands starting with *$* are made in the Wookey SDK Docker container.
 
 ## Building the Docker image
 
