@@ -10,7 +10,7 @@ run echo "deb http://deb.debian.org/debian/ buster contrib non-free" >> /etc/apt
 run	apt-get update
 
 # debian packages dependencies
-run	apt-get install -y bash repo sudo git make gcc-arm-none-eabi binutils-arm-none-eabi python-pip python3-pip python-pyscard python-crypto openjdk-11-jdk maven ant curl zip unzip bash kconfig-frontends
+run	apt-get install -y bash repo sudo git make python-pip python3-pip python-pyscard python-crypto openjdk-11-jdk maven ant curl zip unzip bash kconfig-frontends bzip2
 
 # python dependencies (out of debian)
 run pip install intelhex
@@ -19,6 +19,14 @@ run pip install intelhex
 run curl -o /tmp/gnat-community-2019-20190517-arm-elf-linux64-bin http://mirrors.cdn.adacore.com/art/5ce0010709dcd015aaf8262b
 run echo "6696259f92b40178ab1cc1d3e005acf705dc4162  /tmp/gnat-community-2019-20190517-arm-elf-linux64-bin" > /tmp/gnat.sha1sum
 run sha1sum -c /tmp/gnat.sha1sum
+
+# installing ARM toolchain. The default Debian Buster toolchain can also be used (gcc 7.3), yet the gcc-7 and compiler is more conservative in its
+# optimizations, reducing the performances of the AES algorithm at optimization compile time
+run curl -o  /tmp/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2 https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/6-2017q2/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2
+run echo "0f245753715e5dc8b513c281a0f6dfaed371ad5c  /tmp/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2" > /tmp/gcc.sha1sum
+run sha1sum -c /tmp/gcc.sha1sum
+run tar -xf /tmp/gcc-arm-none-eabi-6-2017-q2-update-linux.tar.bz2 -C /opt
+
 
 run chmod +x /tmp/gnat-community-2019-20190517-arm-elf-linux64-bin
 
@@ -41,7 +49,8 @@ run /bin/dash -c 'echo "build    ALL=(ALL) NOPASSWD: /usr/bin/openocd" > /etc/su
 user build:build
 workdir /build
 
-run echo "export PATH=/opt/adacore-arm-eabi/bin:/usr/local/bin:$PATH" > /build/.bashrc;
+# adding cross gcc and Gnat toolchains to the user PATH variable
+run echo "export PATH=/opt/gcc-arm-none-eabi-6-2017-q2-update/bin:/opt/adacore-arm-eabi/bin:/usr/local/bin:$PATH" > /build/.bashrc;
 # now install and set the SDK
 run /bin/dash -c 'cd /build; \
                   git config --global color.ui true; \

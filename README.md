@@ -1,32 +1,48 @@
-# Wookey SDK Dockerfile
+# WooKey SDK Dockerfile
 
 ## Introduction
 
-this is the Dockerfile for the Wookey project SDK. This image contains a
-fully functional development environment for the Wookey project, including
-the overall requested software for building the Wookey firmware and the
+this is the Dockerfile for the WooKey project SDK. This image contains a
+fully functional development environment for the WooKey project, including
+the overall requested software for building the WooKey firmware and the
 Javacard applet.
 
-The full Wookey project documentation can be found here:
+The full WooKey project documentation can be found here:
 
 https://wookey-project.github.io/index.html
 
 In the following, commands starting with *host>* are made in the host computer, as
-commands starting with *$* are made in the Wookey SDK Docker container.
+commands starting with *$* are made in the WooKey SDK Docker container.
 
 ## Building the Docker image
 
 Just run:
 
-   ```host> docker build Dockerfile-path```
+   ```host> docker build --tag wookey_sdk --compress <Dockerfile-path>```
 
 
 ## Running the Docker image
 
 
-You can interactively open the Wookey SDK using:
+A basic start to interactively access the container would be to use: *docker run -it wookey_sdk*
 
-   ```host> docker run -it wookey_sdk```
+Although, the SDK is made to build an embedded firmware **and** to interact with the
+WooKey boards and Javacard in order to flash them properly. WooKey boards are connected through Discovery
+board ST-Link USB device, hosting as a CWD probe. Javacard are connected through any USB CCID card reader.
+
+These two devices are real hardware and require multiple USB devices to be accessed from the container.
+In order to build **and** flash a WooKey devices in the container require to map them at container start.
+
+This can be done by specifying that USB devices should be mapped into the Docker container:
+
+   ```host> docker run -it --privileged -v /dev/bus/usb:/dev/bus/usb  wookey_sdk```
+
+**CAUTION**: this mode make the docker container being executed in privilegied level, as the /dev/bus/usb subtree is
+fully remapped in the docker container
+
+It is possible to map explicitly each device using the --device option, avoiding a complete remap of the /dev/bus/usb
+filesystem and a privilegied execution. Nonetheless, the --device arguments depend on your own hardware list (CCID reader,
+Discovery board ST-Link reference, and so on).
 
 Once the SDK shell is open, the usual SDK commands can be used, as the overall configuration is already done:
 
@@ -39,30 +55,22 @@ Once the SDK shell is open, the usual SDK commands can be used, as the overall c
    ```[...]```
    
    ```$ make boards/wookey/configs/wookey2_production_defconfig```
+
+**INFO** It is possible to update configuration items using:
+
+   ```$ make menuconfig```
+
+Typical items are the Javacard PIN values that can be upgraded, in the *Secure Token Configuration* menu.
+
+Once the configuration is done, it is possible to compile the overall project:
    
    ```$ make```
    
    ```$ make javacard_compile```
 
+All generated files are hosted in the build/armv7-m/wookey subdirectory.
 
-## Flashing boards and Javacard from Docker images
-
-Wookey boards are connected through Discovery board ST-Link USB device, hosting as a CWD probe.
-Javacard are connected through any USB CCID card reader.
-
-These two devices are real hardware and require multiple USB devices to be accessed from the container.
-
-This can be done at docker image start by specifying that USB devices should be mapped into the Docker container:
-
-   ```host> docker run -it --privileged -v /dev/bus/usb:/dev/bus/usb  wookey_sdk```
-
-**CAUTION**: this mode make the docker container being executed in privilegied level, as the /dev/bus/usb subtree is
-fully remapped in the docker container
-
-It is possible to map explicitly each device using the --device option, avoiding a complete remap of the /dev/bus/usb
-filesystem and a privilegied execution. Nonetheless, the --device arguments depend on your own hardware list (CCID reader,
-Discovery board ST-Link reference, and so on).
-
+## Flashing boards and Javacard from the Docker container
 
 ### Flashing the board
 
@@ -78,7 +86,7 @@ This is done using OpenOCD:
 
 Javacards access requires PCSC daemon to be started. First, start it:
 
-   ```$ sudo /usr/sbin/pcscd --auto-exit```
+   ```$ sudo /usr/sbin/pcscd```
 
 Considering you have three independent Javacard, you can enter successively a new one after each flashing process.
 In the case of a debug firmware configuration, it is possible to use a single Javacard for testing purpose.
@@ -103,28 +111,36 @@ At boot time, it requires the AUTH Javacard to be inserted and ask successively 
 user pin (default 1337). Once the Authentication process is passed, the device is unlocked and usable as a usual
 usb mass storage device.
 
+These PIN can be set in the *Secure Token Configuration/AUTH Token* configuration menu before building the Javacard applet.
+
+They can also be updated at runtime on the WooKey device directly, once it is fully unlocked.
+
 ## Signing a new firmware
 
 Once you have compiled a new firmware (using make), and flashed the SIG applet to the Javacard, it is possible
 to sign it using the Javacard applet as a secure token to encrypt and sign the firmware.
 
-Check that pcscd is up, or start it:
+Check that you already started pcscd, or start it:
 
-   ```$ sudo /usr/sbin/pcscd --auto-exit```
+   ```$ sudo /usr/sbin/pcscd```
 
 To sign a new firmware, just run:
 
-   ```$ make sign tosign=flip:flop version="1.0.0-0"```
+   ```$ make sign_interactive tosign=flip:flop version="1.0.0-0"```
 
-This command create cyphered and signed version of both A and B (flip and flop) firmware images, with a
+This command create ciphered and signed version of both A and B (flip and flop) firmware images, with a
 specific header including the given firmware version.
+
+**INFO**: This command request the SIG applet Pet PIN and User PIN that have been used at applet compile time.
+These PIN are the one you set in the *Secure Token Configuration/SIG Token* configuration menu, or 1234/1234 by default.
 
 ## Securely update the device
 
 It is possible now to reboot the device in DFU mode (by pressing the DFU button bellow it (little black button).
 The device boot in DFU mode, which can be distinguished by a violet color style.
 
-The DFU Javacard must be used to authenticate. Default pet pin is 1234, Default user pin is also 1234.
+The DFU Javacard must be used to authenticate. Again Pet PIN, name and user PIN are the one set in the corresponding
+configuration menu. Default are 1234/1234.
 
 Once the device has booted in DFU mode, it is possible to update it using the previously generated C+I firmware:
 
