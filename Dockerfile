@@ -10,7 +10,7 @@ run echo "deb http://deb.debian.org/debian/ buster contrib non-free" >> /etc/apt
 run	apt-get update
 
 # debian packages dependencies
-run	apt-get install -y bash repo sudo git make python-pip python3-pip python-pyscard python-crypto openjdk-11-jdk maven ant curl zip unzip bash kconfig-frontends bzip2
+run	apt-get install -y bash repo sudo git make python-pip python3-pip python-pyscard python-crypto openjdk-11-jdk maven ant curl zip unzip bash kconfig-frontends bzip2 vim emacs-nox python-sphinx imagemagick python-docutils texlive-pictures texlive-latex-extra texlive-fonts-recommended latexmk ghostscript
 
 # python dependencies (out of debian)
 run pip install intelhex

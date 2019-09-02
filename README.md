@@ -115,6 +115,30 @@ These PIN can be set in the *Secure Token Configuration/AUTH Token* configuratio
 
 They can also be updated at runtime on the WooKey device directly, once it is fully unlocked.
 
+**INFO**: When booting the device, it may not appear *inside* the container, as newly hotplugged devices may not
+have the corresponding /dev/sdX file being created automatically. This does not impact the DFU mode, which can
+nevertheless be used in the container.
+In nominal mode although, the device should appear in the host list and be visible in the *dmesg* messages:
+
+   ```host> dmesg
+   [...]
+   [ 7404.745045] usb 3-1.4.2.4: new high-speed USB device number 14 using xhci_hcd
+   [ 7404.846368] usb 3-1.4.2.4: New USB device found, idVendor=dead, idProduct=cafe, bcdDevice= 0.00
+   [ 7404.846370] usb 3-1.4.2.4: New USB device strings: Mfr=2, Product=1, SerialNumber=3
+   [ 7404.846371] usb 3-1.4.2.4: Product: wookey
+   [ 7404.846372] usb 3-1.4.2.4: Manufacturer: ANSSI
+   [ 7404.846373] usb 3-1.4.2.4: SerialNumber: 123456789012345678901234
+   [ 7404.849150] usb-storage 3-1.4.2.4:1.0: USB Mass Storage device detected
+   [ 7404.849315] scsi host3: usb-storage 3-1.4.2.4:1.0
+   [ 7405.869731] scsi 3:0:0:0: Direct-Access     ANSSI    wookey           0001 PQ: 0 ANSI: 0
+   [ 7405.870234] sd 3:0:0:0: Attached scsi generic sg2 type 0
+   [ 7405.871469] sd 3:0:0:0: [sdd] 31217152 4096-byte logical blocks: (128 GB/119 GiB)
+   [ 7405.871778] sd 3:0:0:0: [sdd] Write Protect is off
+   [ 7405.871779] sd 3:0:0:0: [sdd] Mode Sense: 03 00 00 00
+   [ 7405.872031] sd 3:0:0:0: [sdd] No Caching mode page found
+   [ 7405.872035] sd 3:0:0:0: [sdd] Assuming drive cache: write through
+   [ 7405.881815] sd 3:0:0:0: [sdd] Attached SCSI disk```
+
 ## Signing a new firmware
 
 Once you have compiled a new firmware (using make), and flashed the SIG applet to the Javacard, it is possible
