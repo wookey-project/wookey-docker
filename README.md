@@ -137,7 +137,8 @@ In nominal mode although, the device should appear in the host list and be visib
    [ 7405.871779] sd 3:0:0:0: [sdd] Mode Sense: 03 00 00 00
    [ 7405.872031] sd 3:0:0:0: [sdd] No Caching mode page found
    [ 7405.872035] sd 3:0:0:0: [sdd] Assuming drive cache: write through
-   [ 7405.881815] sd 3:0:0:0: [sdd] Attached SCSI disk```
+   [ 7405.881815] sd 3:0:0:0: [sdd] Attached SCSI disk
+   ```
 
 ## Signing a new firmware
 
