@@ -10,7 +10,7 @@ run echo "deb http://deb.debian.org/debian/ buster contrib non-free" >> /etc/apt
 run	apt-get update
 
 # debian packages dependencies
-run	apt-get install -y bash repo sudo git make python-pip python3-pip python-pyscard python-crypto openjdk-11-jdk maven ant curl zip unzip bash kconfig-frontends bzip2 vim emacs-nox python-sphinx imagemagick python-docutils texlive-pictures texlive-latex-extra texlive-fonts-recommended latexmk ghostscript
+run	apt-get install -y bash repo sudo git make python-pip python3-pip python-pyscard python-crypto openjdk-11-jdk maven ant curl zip unzip bash kconfig-frontends bzip2 vim emacs-nox python-sphinx imagemagick python-docutils texlive-pictures texlive-latex-extra texlive-fonts-recommended latexmk ghostscript coreutils fdisk
 
 # python dependencies (out of debian)
 run pip install intelhex
@@ -44,6 +44,8 @@ run usermod -a -G sudo build;
 run /bin/dash -c 'echo "build    ALL=(ALL) NOPASSWD: /usr/bin/openocd" > /etc/sudoers.d/build; \
                   echo "build    ALL=(ALL) NOPASSWD: /usr/sbin/pcscd" >> /etc/sudoers.d/build; \
                   echo "build    ALL=(ALL) NOPASSWD: /usr/bin/dfu-util" >> /etc/sudoers.d/build; \
+                  echo "build    ALL=(ALL) NOPASSWD: /sbin/cfdisk" >> /etc/sudoers.d/build; \
+                  echo "build    ALL=(ALL) NOPASSWD: /bin/dd" >> /etc/sudoers.d/build; \
                   chmod 0440 /etc/sudoers.d/build'
 
 user build:build

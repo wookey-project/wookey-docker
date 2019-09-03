@@ -24,6 +24,8 @@ Just run:
 ## Running the Docker image
 
 
+### Introduction
+
 A basic start to interactively access the container would be to use: *docker run -it wookey_sdk*
 
 Although, the SDK is made to build an embedded firmware **and** to interact with the
@@ -44,7 +46,38 @@ It is possible to map explicitly each device using the --device option, avoiding
 filesystem and a privilegied execution. Nonetheless, the --device arguments depend on your own hardware list (CCID reader,
 Discovery board ST-Link reference, and so on).
 
-Once the SDK shell is open, the usual SDK commands can be used, as the overall configuration is already done:
+### Saving the docker container useful content in the host
+
+You may whish to keep the SDK content (sources, keys, and generated binary files) in the host PC in order to destroy and
+reinstanciate another container without loosing the useful Wookey files, mostly the crypographic keypairs generated
+during the first build and used to (un)cypher the Wookey device.
+
+This can be easily done by bind-mounting a given host directory into the container and use it as a storage backend:
+
+   ```
+   host> mkdir /home/john/wookey
+   host> docker run -it --privileged -v /home/john/wookey:/mnt/backup -v /dev/bus/usb:/dev/bus/usb  wookey_sdk
+   ```
+
+Here, when entering the container, the /mnt/backup directory exists and can be used by the 'build' user directly.
+It is then possible to save the private keys after the first build:
+
+   ```$ cp -r private /mnt/backup/private```
+
+When restarting another container, it is also possible, **before** building a new firmware, to get back the previously saved private
+directory from the backup storage:
+
+   ```$ cp -r /mnt/backup/private private```
+
+Knowing that, it is possible to keep the cryptographic content independently of the container lifecycle and to generate
+new firmwares using the same keypairs. A previously flashed device with a formated SDCard storage can be flashed again without
+loosing the storage content as there is no key substitution.
+
+**CAUTION**: In a real, production, mode, the cryptographic elements should be stored securely (software or hardware vault, etc.)
+
+### Using the Wookey SDK
+
+Now that the container is up and running and the SDK shell is open, the usual SDK commands can be used, as the overall configuration is already done:
 
    ```$ source setenv.sh```
    
