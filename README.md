@@ -24,7 +24,7 @@ Just run:
 ## Running the Docker image
 
 
-### Introduction
+### Introduction
 
 A basic start to interactively access the container would be to use: *docker run -it wookey_sdk*
 
@@ -46,7 +46,7 @@ It is possible to map explicitly each device using the --device option, avoiding
 filesystem and a privilegied execution. Nonetheless, the --device arguments depend on your own hardware list (CCID reader,
 Discovery board ST-Link reference, and so on).
 
-### Saving the docker container useful content in the host
+### Saving the docker container useful content in the host
 
 You may whish to keep the SDK content (sources, keys, and generated binary files) in the host PC in order to destroy and
 reinstanciate another container without loosing the useful Wookey files, mostly the crypographic keypairs generated
