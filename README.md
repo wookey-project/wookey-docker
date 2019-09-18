@@ -39,7 +39,7 @@ This can be done by specifying that USB devices should be mapped into the Docker
 
    ```host> docker run -it --privileged -v /dev/bus/usb:/dev/bus/usb  wookey_sdk```
 
-**CAUTION**: this mode make the docker container being executed in privilegied level, as the /dev/bus/usb subtree is
+**CAUTION**: this mode makes the docker container being executed in privileged level, as the /dev/bus/usb subtree is
 fully remapped in the docker container
 
 It is possible to map explicitly each device using the --device option, avoiding a complete remap of the /dev/bus/usb
@@ -89,7 +89,7 @@ Now that the container is up and running and the SDK shell is open, the usual SD
    
    ```$ make boards/wookey/configs/wookey2_production_defconfig```
 
-**INFO** It is possible to update configuration items using:
+**INFO**: It is possible to update configuration items using:
 
    ```$ make menuconfig```
 
@@ -135,6 +135,12 @@ Enter the DFU upgrade Javacard. Then run:
 Enter the firmware signature Javacard. Then run:
 
    ```$ make javacard_push_sig```
+
+**INFO**: Beware of killing **any instance of the pcscd daemon** running in your host PC (i.e. outside the Docker image).
+The reason for this is that a mutex is locked on the USB smart card reader when an instance of pcscd uses it, so
+the pcscd running in the host will lock your smart card reader and the pcscd instance running in the Docker image
+will throw an error when trying to use. On UNIX based hosts, you can kill pcscd either using `init.d` or
+`systemd` services managers, or simply using the `kill -9` command as a privileged user.
 
 ## Booting the device in nominal mode
 
