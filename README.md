@@ -20,6 +20,9 @@ Just run:
 
    ```host> docker build --tag wookey_sdk --compress <Dockerfile-path>```
 
+If you wish to build a Docker image for the nigthly version of Wookey, specify the nightly Docker file:
+
+   ```host> docker build --tag wookey_sdk_nightly --compress -f Dockerfile.nightly <Dockerfile-path>```
 
 ## Running the Docker image
 
